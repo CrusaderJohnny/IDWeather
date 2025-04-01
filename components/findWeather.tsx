@@ -35,15 +35,10 @@ const WeatherDisplay: React.FC<WeatherDisplayProps> = ({latitude, longitude}) =>
     const [weatherData, setWeatherData] = useState<WeatherData | null>(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
-    var url;
     useEffect(() => {
         const fetchWeatherData = async () => {
             try {
-                if(latitude == null || longitude == null){
-                    url = "https://api.open-meteo.com/v1/forecast?latitude=51.05&longitude=-114.08529&daily=temperature_2m_max,temperature_2m_min,sunrise,sunset&current=temperature_2m,apparent_temperature,precipitation,cloud_cover,pressure_msl,wind_speed_10m,wind_direction_10m,wind_gusts_10m&timezone=auto";                
-                } else {
-                    url = `https://api.open-meteo.com/v1/forecast?latitude=${latitude}&longitude=${longitude}&daily=temperature_2m_max,temperature_2m_min,sunrise,sunset&current=temperature_2m,apparent_temperature,precipitation,cloud_cover,pressure_msl,wind_speed_10m,wind_direction_10m,wind_gusts_10m&timezone=auto`;
-                }
+                const url = `https://api.open-meteo.com/v1/forecast?latitude=${latitude}&longitude=${longitude}&daily=temperature_2m_max,temperature_2m_min,sunrise,sunset&current=temperature_2m,apparent_temperature,precipitation,cloud_cover,pressure_msl,wind_speed_10m,wind_direction_10m,wind_gusts_10m&timezone=auto`;
                 const response = await fetch(url);
                 if (!response.ok) {
                 throw new Error(`HTTP error! status: ${response.status}`);
