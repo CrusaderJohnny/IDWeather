@@ -110,7 +110,8 @@ export default function SearchPage() {
                 keyExtractor={(item) => `${item.id}-${item.name}`}
                 renderItem={({ item }) => (
                     <TouchableOpacity
-                        onPress={() => handleSelectCity(item)}
+                        onPress={() => goBackWithLocation(item)}
+                        onLongPress={() => handleSelectCity(item)}
                         style={styles.suggestionItem}
                     >
                         <Text>{item.name}, {item.country}</Text>
