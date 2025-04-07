@@ -11,6 +11,7 @@ const DisplayWeather: React.FC<WeatherDisplayProps> = ({current, daily, hourly, 
 
     return (
         <ScrollView style={styles.container}>
+            
             {/* Current Conditions */}
             <View style={styles.currentWeatherContainer}>
                 <Text style={styles.currentTemp}>{current?.temperature2m}°C<WeatherEmoji weatherCode={current?.weatherCode} isNight={isNightCurrent}/></Text>

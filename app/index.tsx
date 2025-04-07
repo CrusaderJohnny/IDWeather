@@ -1,16 +1,45 @@
-import { View } from "react-native";
+import { View, TouchableOpacity, StyleSheet } from "react-native";
 import { useState } from "react";
 import WeatherApp from "../components/weatherApp";
-import SearchPage from "../components/searchPage";
+import Ionicons from '@expo/vector-icons/Ionicons';
+import { useRouter } from "expo-router";
+
 
 export default function App() {
     const [lats, setLats] = useState(51.05);
     const [longs, setLongs] = useState(-114.08529);
+    const router = useRouter();
 
-    return (
-        <View style={{ flex: 1 }}>
-            <SearchPage setLatitude={setLats} setLongitude={setLongs} />
-            <WeatherApp latitude={lats} longitude={longs} />
+    return(
+        <View style={styles.container}>
+
+          <View style={styles.header}>
+            {/* Favorite Icon*/}
+            <TouchableOpacity onPress={() => router.push("favourites")}>
+              <Ionicons name="star" size={30} color="#000" />
+            </TouchableOpacity>
+
+            {/* Search Icon*/}
+            <TouchableOpacity onPress={() => router.push("search")}>
+              <Ionicons name="search" size={30} color="#000" />
+            </TouchableOpacity>
+          </View>
+
+            {/* Weather App */}
+            <WeatherApp latitude={lats} longitude={longs}/>
         </View>
     );
-}
+};
+
+const styles = StyleSheet.create({
+    container: {
+        flex: 1,
+        backgroundColor: '#f0f0f0',
+    },
+    header: {
+      flexDirection: 'row',
+      justifyContent: 'space-between',
+      alignItems: 'center',
+      padding: 15,
+    },
+});
