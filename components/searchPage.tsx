@@ -46,7 +46,6 @@ export default function SearchPage() {
             [
                 {
                     text: 'No',
-                    onPress: () => goBackWithLocation(location),
                     style: 'cancel',
                 },
                 {
