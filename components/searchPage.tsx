@@ -1,31 +1,54 @@
-import React, { useState } from 'react';
-import { View, TextInput, Button, StyleSheet, Alert } from 'react-native';
+import React, { useState, useEffect } from 'react';
+import {
+    View,
+    TextInput,
+    FlatList,
+    TouchableOpacity,
+    Text,
+    StyleSheet,
+    Alert
+} from 'react-native';
+import { useRouter } from 'expo-router';
 
-interface SearchPageProps {
-    setLatitude: (lat: number) => void;
-    setLongitude: (lon: number) => void;
-}
-
-const SearchPage: React.FC<SearchPageProps> = ({ setLatitude, setLongitude }) => {
+export default function SearchPage() {
     const [city, setCity] = useState('');
+    const [suggestions, setSuggestions] = useState<any[]>([]);
+    const router = useRouter();
 
-    const searchCity = async () => {
-        if (!city) return Alert.alert("Please enter a city name");
-
-        try {
-            const response = await fetch(`https://geocoding-api.open-meteo.com/v1/search?name=${encodeURIComponent(city)}&count=1`);
-            const data = await response.json();
-
-            if (data.results && data.results.length > 0) {
-                const location = data.results[0];
-                setLatitude(location.latitude);
-                setLongitude(location.longitude);
-            } else {
-                Alert.alert("City not found");
+    useEffect(() => {
+        const fetchSuggestions = async () => {
+            if (!city) {
+                setSuggestions([]);
+                return;
             }
-        } catch (error) {
-            Alert.alert("Error fetching location");
+
+            try {
+                const response = await fetch(
+                    `https://geocoding-api.open-meteo.com/v1/search?name=${encodeURIComponent(city)}&count=10`
+                );
+                const data = await response.json();
+                setSuggestions(data.results || []);
+            } catch (error) {
+                console.error("Error fetching suggestions:", error);
+                setSuggestions([]);
+            }
+        };
+
+        const timeoutId = setTimeout(fetchSuggestions, 300);
+        return () => clearTimeout(timeoutId);
+    }, [city]);
+
+    const selectCity = (location: any) => {
+        if (!location.latitude || !location.longitude) {
+            Alert.alert("Invalid city selection.");
+            return;
         }
+
+        // Navigate back to home with lat/lon
+        router.replace({
+            pathname: '/',
+            params: { lat: location.latitude.toString(), lon: location.longitude.toString() },
+        });
     };
 
     return (
@@ -36,15 +59,27 @@ const SearchPage: React.FC<SearchPageProps> = ({ setLatitude, setLongitude }) =>
                 onChangeText={setCity}
                 style={styles.input}
             />
-            <Button title="Search" onPress={searchCity} />
+            <FlatList
+                data={suggestions}
+                keyExtractor={(item) => `${item.id}-${item.name}`}
+                renderItem={({ item }) => (
+                    <TouchableOpacity
+                        onPress={() => selectCity(item)}
+                        style={styles.suggestionItem}
+                    >
+                        <Text>{item.name}, {item.country}</Text>
+                    </TouchableOpacity>
+                )}
+            />
         </View>
     );
-};
+}
 
 const styles = StyleSheet.create({
     container: {
         padding: 10,
         marginTop: 50,
+        flex: 1,
     },
     input: {
         borderColor: 'gray',
@@ -53,6 +88,9 @@ const styles = StyleSheet.create({
         marginBottom: 10,
         borderRadius: 5,
     },
+    suggestionItem: {
+        paddingVertical: 10,
+        borderBottomColor: '#ccc',
+        borderBottomWidth: 1,
+    },
 });
-
-export default SearchPage;
