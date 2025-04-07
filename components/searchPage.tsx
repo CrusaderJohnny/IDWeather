@@ -6,9 +6,10 @@ import {
     TouchableOpacity,
     Text,
     StyleSheet,
-    Alert
+    Alert,
 } from 'react-native';
 import { useRouter } from 'expo-router';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 export default function SearchPage() {
     const [city, setCity] = useState('');
@@ -38,16 +39,61 @@ export default function SearchPage() {
         return () => clearTimeout(timeoutId);
     }, [city]);
 
-    const selectCity = (location: any) => {
-        if (!location.latitude || !location.longitude) {
-            Alert.alert("Invalid city selection.");
-            return;
+    const handleSelectCity = (location: any) => {
+        Alert.alert(
+            'Add to Favourites?',
+            `Do you want to add ${location.name}, ${location.country} to your favourites?`,
+            [
+                {
+                    text: 'No',
+                    onPress: () => goBackWithLocation(location),
+                    style: 'cancel',
+                },
+                {
+                    text: 'Yes',
+                    onPress: () => saveFavouriteAndGo(location),
+                },
+            ]
+        );
+    };
+
+    const saveFavouriteAndGo = async (location: any) => {
+        const cityToSave = {
+            name: location.name,
+            country: location.country,
+            latitude: location.latitude,
+            longitude: location.longitude,
+        };
+
+        try {
+            const stored = await AsyncStorage.getItem('favourites');
+            const favs = stored ? JSON.parse(stored) : [];
+
+            const exists = favs.some(
+                (c: any) =>
+                    c.name === cityToSave.name &&
+                    c.latitude === cityToSave.latitude &&
+                    c.longitude === cityToSave.longitude
+            );
+
+            if (!exists) {
+                favs.push(cityToSave);
+                await AsyncStorage.setItem('favourites', JSON.stringify(favs));
+            }
+        } catch (err) {
+            console.error("Error saving favourite:", err);
         }
 
-        // Navigate back to home with lat/lon
+        goBackWithLocation(location);
+    };
+
+    const goBackWithLocation = (location: any) => {
         router.replace({
             pathname: '/',
-            params: { lat: location.latitude.toString(), lon: location.longitude.toString() },
+            params: {
+                lat: location.latitude.toString(),
+                lon: location.longitude.toString(),
+            },
         });
     };
 
@@ -64,7 +110,7 @@ export default function SearchPage() {
                 keyExtractor={(item) => `${item.id}-${item.name}`}
                 renderItem={({ item }) => (
                     <TouchableOpacity
-                        onPress={() => selectCity(item)}
+                        onPress={() => handleSelectCity(item)}
                         style={styles.suggestionItem}
                     >
                         <Text>{item.name}, {item.country}</Text>
