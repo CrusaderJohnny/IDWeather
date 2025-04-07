@@ -50,13 +50,13 @@ export default function SearchPage() {
                 },
                 {
                     text: 'Yes',
-                    onPress: () => saveFavouriteAndGo(location),
+                    onPress: () => saveFavourite(location),
                 },
             ]
         );
     };
 
-    const saveFavouriteAndGo = async (location: any) => {
+    const saveFavourite = async (location: any) => {
         const cityToSave = {
             name: location.name,
             country: location.country,
@@ -82,8 +82,6 @@ export default function SearchPage() {
         } catch (err) {
             console.error("Error saving favourite:", err);
         }
-
-        goBackWithLocation(location);
     };
 
     const goBackWithLocation = (location: any) => {
