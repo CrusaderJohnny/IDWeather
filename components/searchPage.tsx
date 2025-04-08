@@ -96,6 +96,9 @@ export default function SearchPage() {
 
     return (
         <View style={styles.container}>
+            <TouchableOpacity onPress={() => router.push('favourites')}>
+                <Text style={styles.favouriteButton}>Go to Favourites</Text>
+            </TouchableOpacity>
             <TextInput
                 placeholder="Enter city name"
                 value={city}
@@ -122,7 +125,7 @@ export default function SearchPage() {
 const styles = StyleSheet.create({
     container: {
         padding: 10,
-        marginTop: 50,
+        marginTop: 25,
         flex: 1,
     },
     input: {
@@ -136,5 +139,13 @@ const styles = StyleSheet.create({
         paddingVertical: 10,
         borderBottomColor: '#ccc',
         borderBottomWidth: 1,
+    },
+    favouriteButton: {
+        backgroundColor: 'lightblue',
+        padding: 10,
+        borderRadius: 10,
+        marginBottom: 20,
+        textAlign: 'center',
+        fontWeight: 'bold',
     },
 });
