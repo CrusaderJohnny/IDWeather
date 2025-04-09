@@ -10,6 +10,7 @@ import {
 } from 'react-native';
 import { useRouter } from 'expo-router';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import Ionicons from '@expo/vector-icons/Ionicons';
 
 export default function SearchPage() {
     const [city, setCity] = useState('');
@@ -90,12 +91,19 @@ export default function SearchPage() {
             params: {
                 lat: location.latitude.toString(),
                 lon: location.longitude.toString(),
+                name: location.name,
+                country: location.country
             },
         });
     };
 
     return (
         <View style={styles.container}>
+            <TouchableOpacity onPress={() => router.back()} style={styles.backButton}>
+                <Ionicons name="arrow-back" size={30} color="black" />
+            </TouchableOpacity>
+
+
             <TouchableOpacity onPress={() => router.push('favourites')}>
                 <Text style={styles.favouriteButton}>Go to Favourites</Text>
             </TouchableOpacity>
@@ -125,7 +133,7 @@ export default function SearchPage() {
 const styles = StyleSheet.create({
     container: {
         padding: 10,
-        marginTop: 25,
+        marginTop: 10,
         flex: 1,
     },
     input: {
@@ -148,4 +156,10 @@ const styles = StyleSheet.create({
         textAlign: 'center',
         fontWeight: 'bold',
     },
+    backButton: {
+        marginBottom: 10,
+        paddingVertical: 8,
+        paddingHorizontal: 12,
+      },
+      
 });

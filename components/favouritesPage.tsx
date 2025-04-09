@@ -9,6 +9,7 @@ import {
 } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useRouter } from 'expo-router';
+import Ionicons from '@expo/vector-icons/Ionicons';
 
 type City = {
   name: string;
@@ -56,6 +57,11 @@ export default function FavouritesPage() {
 
   return (
     <View style={styles.container}>
+
+      <TouchableOpacity onPress={() => router.back()} style={styles.backButton}>
+        <Ionicons name="arrow-back" size={30} color="black" />
+      </TouchableOpacity>
+
       <Text style={styles.header}>Favourites</Text>
       <FlatList
         data={favourites}
@@ -80,8 +86,8 @@ export default function FavouritesPage() {
 
 const styles = StyleSheet.create({
   container: {
-    marginTop: 50,
-    padding: 20,
+    marginTop: 10,
+    padding: 10,
     flex: 1,
   },
   header: {
@@ -102,5 +108,10 @@ const styles = StyleSheet.create({
   remove: {
     fontSize: 18,
     color: 'red',
+  },
+  backButton: {
+    marginBottom: 10,
+    paddingVertical: 8,
+    paddingHorizontal: 12,
   },
 });
