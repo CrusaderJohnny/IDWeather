@@ -53,3 +53,8 @@ export interface WeatherDisplayProps {
     hourly: HourlyWeatherData;
     forecast: ForecastDayItem[];
 }
+
+export interface WeatherAppProps {
+    latitude: number;
+    longitude: number;
+}

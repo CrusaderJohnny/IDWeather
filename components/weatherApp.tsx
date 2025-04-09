@@ -1,13 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import { View, Text, StyleSheet } from 'react-native';
 import DisplayWeather from './displayWeather'; 
-import { DailyWeatherData, CurrentWeatherData, HourlyWeatherData, WeatherData, ForecastDayItem} from '../types/weather';
+import { DailyWeatherData, CurrentWeatherData, HourlyWeatherData, WeatherData, ForecastDayItem, WeatherAppProps} from '../types/weather';
 
 
-interface WeatherAppProps {
-    latitude: number;
-    longitude: number;
-}
+
 
 const WeatherApp: React.FC<WeatherAppProps> = ({ latitude, longitude }) => {
     const [weatherData, setWeatherData] = useState<WeatherData>({
