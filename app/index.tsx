@@ -10,7 +10,7 @@ export default function App() {
     const router = useRouter();
     const params = useLocalSearchParams();
     const [cityName, setCityName] = useState("Unnamed");
-    const [countryName, setCountryName] = useState("Unknown");
+    const [countryName, setCountryName] = useState("");
     const [lats, setLats] = useState(51.05);
     const [longs, setLongs] = useState(-114.08529);
     const [isFavourited, setIsFavourited] = useState(false);
@@ -29,7 +29,7 @@ export default function App() {
                 setLongs(lon);
 
                 const name = typeof params.name === 'string' ? params.name : "Unnamed";
-                const country = typeof params.country === 'string' ? params.country : "Unknown";
+                const country = typeof params.country === 'string' ? params.country : "";
                 setCityName(name);
                 setCountryName(country);
     
@@ -43,14 +43,14 @@ export default function App() {
                     setLats(lat);
                     setLongs(lon);
                     setCityName(name ?? "Unnamed")
-                    setCountryName( country ?? "Unknown")
+                    setCountryName( country ?? "")
                     checkFavourite(lat, lon);
 
                     await AsyncStorage.setItem('lastLocation', JSON.stringify({
                         lat,
                         lon,
                         name: name ?? "Unnamed",
-                        country: country ?? "Unknown",
+                        country: country ?? "",
                     }));
                 }
             }

@@ -11,10 +11,12 @@ import {
 import { useRouter } from 'expo-router';
 import Ionicons from '@expo/vector-icons/Ionicons';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { City } from '../types/weather';
 
 export default function SearchPage() {
     const [city, setCity] = useState('');
     const [suggestions, setSuggestions] = useState<any[]>([]);
+    const [favourites, setFavourites] = useState<City[]>([]);
     const router = useRouter();
 
     useEffect(() => {
@@ -36,54 +38,18 @@ export default function SearchPage() {
             }
         };
 
+        const loadFavourites = async () => {
+            const stored = await AsyncStorage.getItem('favourites');
+            if (stored) {
+              setFavourites(JSON.parse(stored));
+            }
+          };
+
         const timeoutId = setTimeout(fetchSuggestions, 300);
+        loadFavourites();
+
         return () => clearTimeout(timeoutId);
     }, [city]);
-
-    const handleSelectCity = (location: any) => {
-        Alert.alert(
-            'Add to Favourites?',
-            `Do you want to add ${location.name}, ${location.country} to your favourites?`,
-            [
-                {
-                    text: 'No',
-                    style: 'cancel',
-                },
-                {
-                    text: 'Yes',
-                    onPress: () => saveFavourite(location),
-                },
-            ]
-        );
-    };
-
-    const saveFavourite = async (location: any) => {
-        const cityToSave = {
-            name: location.name,
-            country: location.country,
-            latitude: location.latitude,
-            longitude: location.longitude,
-        };
-
-        try {
-            const stored = await AsyncStorage.getItem('favourites');
-            const favs = stored ? JSON.parse(stored) : [];
-
-            const exists = favs.some(
-                (c: any) =>
-                    c.name === cityToSave.name &&
-                    c.latitude === cityToSave.latitude &&
-                    c.longitude === cityToSave.longitude
-            );
-
-            if (!exists) {
-                favs.push(cityToSave);
-                await AsyncStorage.setItem('favourites', JSON.stringify(favs));
-            }
-        } catch (err) {
-            console.error("Error saving favourite:", err);
-        }
-    };
 
     const goBackWithLocation = (location: any, prevInfo: boolean) => {
         router.replace({
@@ -98,10 +64,39 @@ export default function SearchPage() {
         });
     };
 
+    const isFavourited = (city: City) => {
+        return favourites.some(
+          fav =>
+            fav.latitude === city.latitude &&
+            fav.longitude === city.longitude &&
+            fav.name === city.name
+        );
+      };
+      
+      const toggleFavourite = async (city: City) => {
+        const exists = isFavourited(city);
+        let updated;
+      
+        if (exists) {
+          updated = favourites.filter(
+            fav =>
+              !(fav.latitude === city.latitude &&
+                fav.longitude === city.longitude &&
+                fav.name === city.name)
+          );
+        } else {
+          updated = [...favourites, city];
+        }
+      
+        setFavourites(updated);
+        await AsyncStorage.setItem('favourites', JSON.stringify(updated));
+      };
+      
+
     return (
         <View style={styles.container}>
             <View style={styles.header}>
-
+                {/* header with input field and favourite button */}
                 <View style={styles.headerContainer}>
                     <TouchableOpacity onPress={() => router.push('favourites')}>
                         <Text style={styles.favouriteButton}>Go to Favourites</Text>
@@ -113,21 +108,33 @@ export default function SearchPage() {
                         style={styles.input}
                     />
                 </View>
+                {/* back button */}
                 <TouchableOpacity onPress={() => router.back()} style={styles.backButton}>
                     <Ionicons name="arrow-back" size={30} color="black" />
                 </TouchableOpacity>
             </View>
+            {/* suggestions list */}
             <FlatList
                 data={suggestions}
                 keyExtractor={(item) => `${item.id}-${item.name}`}
                 renderItem={({ item }) => (
-                    <TouchableOpacity
-                        onPress={() => goBackWithLocation(item, true)}
-                        onLongPress={() => handleSelectCity(item)}
-                        style={styles.suggestionItem}
-                    >
-                        <Text>{item.name}, {item.country}</Text>
-                    </TouchableOpacity>
+                    <View style={styles.suggestionRow}>
+                        <TouchableOpacity
+                            onPress={() => goBackWithLocation(item, true)}
+                            style={styles.suggestionText}
+                        >
+                            <Text>{item.name}{item.country ? `, ${item.country}` : ''}</Text>
+                        </TouchableOpacity>
+
+                        {/*favourite toggle button*/}
+                        <TouchableOpacity onPress={() => toggleFavourite(item)}>
+                            <Ionicons
+                            name={isFavourited(item) ? 'star' : 'star-outline'}
+                            size={22}
+                            color={isFavourited(item) ? '#FFD700' : '#aaa'}
+                            />
+                        </TouchableOpacity>
+                    </View>
                 )}
             />
         </View>
@@ -173,6 +180,18 @@ const styles = StyleSheet.create({
         paddingVertical: 8,
         paddingHorizontal: 12,
         flexDirection: 'row-reverse'
+    },
+    suggestionRow: {
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        alignItems: 'center',
+        paddingVertical: 10,
+        borderBottomColor: '#ccc',
+        borderBottomWidth: 1,
+      },
+      
+      suggestionText: {
+        flex: 1,
       },
       
 });
