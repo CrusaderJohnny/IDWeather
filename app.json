@@ -19,7 +19,8 @@
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#ffffff"
-      }
+      },
+      "package": "com.johntribolta.IDWeather"
     },
     "web": {
       "favicon": "./assets/favicon.png",
@@ -28,6 +29,15 @@
     "plugins": [
       "expo-router"
     ],
-    "scheme": "IDWeather"
+    "scheme": "IDWeather",
+    "extra": {
+      "router": {
+        "origin": false
+      },
+      "eas": {
+        "projectId": "0d832fcd-ea9e-46ea-8443-1604f47b6608"
+      }
+    },
+    "owner": "johntribolta"
   }
 }
