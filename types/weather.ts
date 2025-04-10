@@ -59,6 +59,7 @@ export interface WeatherAppProps {
     latitude: number;
     longitude: number;
     cityName: string;
+    cityCountry: string;
 }
 
 export interface City {

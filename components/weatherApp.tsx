@@ -6,7 +6,7 @@ import { DailyWeatherData, CurrentWeatherData, HourlyWeatherData, WeatherData, F
 
 
 
-const WeatherApp: React.FC<WeatherAppProps> = ({ latitude, longitude, cityName }) => {
+const WeatherApp: React.FC<WeatherAppProps> = ({ latitude, longitude, cityName, cityCountry }) => {
     const [weatherData, setWeatherData] = useState<WeatherData>({
         current: null,
         daily: [],
@@ -15,9 +15,9 @@ const WeatherApp: React.FC<WeatherAppProps> = ({ latitude, longitude, cityName }
     });
     const [city, setCity] = useState<City>({
         name: cityName,
-        country: "CA",
-        latitude: 51.05,
-        longitude: -114.08529
+        country: cityCountry,
+        latitude: latitude,
+        longitude: longitude
     })
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
